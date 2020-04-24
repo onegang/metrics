@@ -1,5 +1,7 @@
 package metrics;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,10 @@ public class Metric {
   private String message;
   
   private long start;
+  
+  private String eventTime;
+  
+  private String userid;
   
   private Metric() {
     start = System.currentTimeMillis();
@@ -35,9 +41,21 @@ public class Metric {
     return this;
   }
   
+  public Metric eventTime(Date eventTime) {
+	  this.eventTime = Util.formatDate("yyyy-MM-dd'T'HH:mm:ssZ", eventTime);
+	  return this;
+  }
+  
+  public Metric userid(String userid) {
+	  this.userid = userid;
+	  return this;
+  }
+  
   public void send() {
     long duration = System.currentTimeMillis() - start;
     LOGGER.info(Markers.append("action", action).
+    	and(Markers.append("eventTime", eventTime)).
+    	and(Markers.append("userid", userid)).
         and(Markers.append("duration", duration)), message);
   }
   

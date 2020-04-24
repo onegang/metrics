@@ -8,5 +8,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Main.class, args);
+		
+		DataGenerator generator = new DataGenerator();
+		generator.generateDate(7);
 	}
 }
