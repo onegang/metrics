@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/onegang/metrics.svg?branch=master)](https://travis-ci.org/onegang/metrics)
+
 # metrics
 Used to generate metrics data.
 
