@@ -42,7 +42,7 @@ public class Metric {
   }
   
   public Metric eventTime(Date eventTime) {
-	  this.eventTime = Util.formatDate("yyyy-MM-dd'T'HH:mm:ssZ", eventTime);
+	  this.eventTime = Util1.formatDate("yyyy-MM-dd'T'HH:mm:ssZ", eventTime);
 	  return this;
   }
   
