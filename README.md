@@ -5,6 +5,9 @@ Used to generate metrics data.
 
 ## Logstash config:
 ```
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+
 input {
   tcp {
     port => 5000
@@ -23,7 +26,7 @@ filter {
 output {
   elasticsearch {
     hosts => ["http://localhost:9200"]
-    index => "grapes-%{+YYYY.MM.dd}"
+    index => "grapes-%{+YYYY.MM}"
   }
 }
 ```

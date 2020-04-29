@@ -32,18 +32,67 @@ public class DataGenerator {
 	private void generate(Date day) throws IOException {
 		LOGGER.info("Generating for {}", Util.formatDate("dd-MM-yyyy", day));
 		
-		int events = random.nextInt(1500) + 2000;
+		int events = random.nextInt(150) + 200;
 		for(int i=0; i<events; i++) {
 			String user = getUser();
+			String team = getTeam(user);
+			String section = getSection(team);
+			String cluster = getCluster(team);
 			
 			Metric.start().action("Load").eventTime(randomTime(day)).userid(user).send();
 			if(random.nextInt(5)%5==0)
-				Metric.start().action("Content Search").eventTime(randomTime(day)).userid(user).message(getSearchTerms()).send();
+				Metric.start().action("Content Search").eventTime(randomTime(day)).
+				userid(user).team(team).section(section).cluster(cluster).message(getSearchTerms()).send();
+			if(random.nextInt(3)%3==0 && !user.startsWith("B"))
+				Metric.start().action("Instant Message").eventTime(randomTime(day)).
+				userid(user).team(team).section(section).cluster(cluster).send();
+			if(random.nextInt(7)%7==0 && !user.contains("o"))
+				Metric.start().action("Folders").eventTime(randomTime(day)).
+				userid(user).team(team).section(section).cluster(cluster).send();
+			
+			if(random.nextInt(3)%3==0)				
+				Metric.start().sort(getSort(user)).eventTime(randomTime(day)).
+				userid(user).team(team).section(section).cluster(cluster).send();
+		}
+		
+		int dataCount = random.nextInt(250) + 120;
+		for(int i=0; i<dataCount; i++) {
+			String user = getUser();
+			String team = getTeam(user);
+			String section = getSection(team);
+			String cluster = getCluster(team);
+			String project = getProject();
+			String priority = String.valueOf(random.nextInt(5)+1);
+			
+			final String[] statuses = new String[] {"RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW","RAW", "RAW", "RAW", "RAW",
+					"DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", 
+					"DRAFT", "DRAFT", "DRAFT", 
+					"ARCHIVED", "REPORTED"};
+			String status = statuses[random.nextInt(statuses.length)];
+			Metric.start().status(status).priority(priority).eventTime(randomTime(day)).
+				userid(user).team(team).section(section).cluster(cluster).project(project).send();
+			
+			long delay = random.nextInt(120);
+			if(priority.equals("1"))
+				delay = random.nextInt(15);
+			else if(priority.equals("2"))
+				delay = random.nextInt(25);
+			DataMetric.start().eventTime(randomTime(day)).delay(delay).
+				priority(priority).project(project).team(team).send();
 		}
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	private String getSort(String user) {
+		if(user.startsWith("D"))
+			return "id";
+		else if(user.contains("o"))
+			return "priority";
+		else 
+			return "date";
 	}
 	
 	private String getSearchTerms() throws IOException {
@@ -63,6 +112,24 @@ public class DataGenerator {
 				"Betty", "Ling Ling", "Willy", "Ped", "Jordan", "Wed", "Weaton", "Billy", "Polly", "Mocky",
 				"Ash", "Ashley", "Groke", "Thanos", "Iron", "Meth"};
 		return users[random.nextInt(users.length)];
+	}
+	
+	private String getTeam(String user) {
+		final String[] teams = new String[] {"Alpha", "Arrows", "Anchorage", "Bravo", "Bloop", "Banner", "Delta", "Decho", "Dargate"};
+		return teams[user.charAt(0)%teams.length];
+	}
+	
+	private String getProject() {
+		final String[] projects = new String[] {"W-1000", "W-1001", "GH-1001", "GG-0023", "Others"};
+		return projects[random.nextInt(projects.length)];
+	}
+	
+	private String getSection(String team) {
+		return team.charAt(0) + "-1";
+	}
+	
+	private String getCluster(String team) {
+		return "Big Gang";
 	}
 	
 	private Date randomTime(Date date) {

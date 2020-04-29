@@ -12,6 +12,6 @@ public class Main {
 		SpringApplication.run(Main.class, args);
 		
 		DataGenerator generator = new DataGenerator();
-		generator.generateDate(7);
+		generator.generateDate(15);
 	}
 }
