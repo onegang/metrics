@@ -55,6 +55,7 @@ public class DataGenerator {
 				userid(user).team(team).section(section).cluster(cluster).send();
 		}
 		
+		int maxDelayOffset = random.nextInt(5);
 		int dataCount = random.nextInt(250) + 120;
 		for(int i=0; i<dataCount; i++) {
 			String user = getUser();
@@ -71,11 +72,7 @@ public class DataGenerator {
 			Metric.start().status(status).priority(priority).prioritySort(prioritySort).score(score).app(app).eventTime(randomTime(day)).
 				userid(user).team(team).section(section).cluster(cluster).project(project).send();
 			
-			long delay = random.nextInt(120);
-			if(priority.equals("1"))
-				delay = random.nextInt(15);
-			else if(priority.equals("2"))
-				delay = random.nextInt(25);
+			long delay = getDelay(priority, maxDelayOffset);
 			DataMetric.start().eventTime(randomTime(day)).delay(delay).
 				priority(priority).project(project).team(team).send();
 		}
@@ -83,6 +80,17 @@ public class DataGenerator {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	private long getDelay(String priority, int maxDelayOffset) {
+		long delay = random.nextInt(120 - maxDelayOffset);
+		if(priority.equals("1"))
+			delay = random.nextInt(16 - maxDelayOffset);
+		else if(priority.equals("2"))
+			delay = random.nextInt(30 - maxDelayOffset);
+		else if(priority.equals("3"))
+			delay = random.nextInt(83 - maxDelayOffset);
+		return delay;
 	}
 	
 	private int getPrioritySort(String priority) {
