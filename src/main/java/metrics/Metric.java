@@ -31,6 +31,12 @@ public class Metric {
   
   private String priority;
   
+  private int prioritySort;
+  
+  private String app;
+  
+  private int score;
+  
   private Collection<String> sorts;
   
   private long start;
@@ -58,6 +64,16 @@ public class Metric {
     return this;
   }
   
+  public Metric score(int score) {
+	this.score = score;
+	return this;
+  }
+  
+  public Metric app(String app) {
+	this.app = app;
+	return this;
+  }
+  
   public Metric status(String status) {
 	  this.status = status;
 	  return this;
@@ -80,6 +96,11 @@ public class Metric {
   
   public Metric priority(String priority) {
 	  this.priority = priority;
+	  return this;
+  }
+  
+  public Metric prioritySort(int prioritySort) {
+	  this.prioritySort = prioritySort;
 	  return this;
   }
   
@@ -130,8 +151,11 @@ public class Metric {
     	and(Markers.append("status", status)).
     	and(Markers.append("project", project)).
     	and(Markers.append("priority", priority)).
+    	and(Markers.append("prioritySort", prioritySort)).
     	and(Markers.append("sorts", sorts)).
     	and(Markers.append("userid", userid)).
+    	and(Markers.append("score", score)).
+    	and(Markers.append("app", app)).
     	and(Markers.append("teams", teams)).
     	and(Markers.append("sections", sections)).
     	and(Markers.append("clusters", clusters)).

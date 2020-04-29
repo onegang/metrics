@@ -62,14 +62,13 @@ public class DataGenerator {
 			String section = getSection(team);
 			String cluster = getCluster(team);
 			String project = getProject();
-			String priority = String.valueOf(random.nextInt(5)+1);
+			String priority = String.valueOf(random.nextInt(4)+1);
+			int prioritySort = getPrioritySort(priority);
+			String status = getStatus(priority);
+			String app = getApp();
+			int score = getScore(status, prioritySort);
 			
-			final String[] statuses = new String[] {"RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW","RAW", "RAW", "RAW", "RAW",
-					"DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", 
-					"DRAFT", "DRAFT", "DRAFT", 
-					"ARCHIVED", "REPORTED"};
-			String status = statuses[random.nextInt(statuses.length)];
-			Metric.start().status(status).priority(priority).eventTime(randomTime(day)).
+			Metric.start().status(status).priority(priority).prioritySort(prioritySort).score(score).app(app).eventTime(randomTime(day)).
 				userid(user).team(team).section(section).cluster(cluster).project(project).send();
 			
 			long delay = random.nextInt(120);
@@ -81,9 +80,59 @@ public class DataGenerator {
 				priority(priority).project(project).team(team).send();
 		}
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	private int getPrioritySort(String priority) {
+		return random.nextInt(10) + Integer.parseInt(priority) * 10;
+	}
+
+	private int getScore(String status, int priority) {
+		//outlier generation
+		if(random.nextInt(500)==23)
+			return random.nextInt(100);
+		
+		int statusScore = 0;
+		int priorityScore = 0;
+		
+		if("REPORTED".equals(status))
+			statusScore = 60;
+		else if("DISCARDED".equals(status))
+			statusScore = 3;
+		else if("ARCHIVED".equals(status))
+			statusScore = 23;
+		else if("DRAFT".equals(status))
+			statusScore = 11 + random.nextInt(7);
+		
+		if(priority < 30)
+			priorityScore = 15 + random.nextInt(10);
+		else
+			priorityScore = random.nextInt(10);
+		
+		return statusScore + priorityScore + random.nextInt(17);
+	}
+
+	private String getApp() {
+		String[] apps = new String[] {"OUTLOOK", "OUTLOOK", "AUDIO", "DOCS", "SMS", "IM", "IM", "IM", "IM", "IM", "GAMES", "BROWSER"};
+		return apps[random.nextInt(apps.length)];
+	}
+
+	private String getStatus(String priority) {
+		if("3".equals(priority) || "4".equals(priority) || "5".equals(priority)) {
+			final String[] statuses = new String[] {"RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW","RAW", "RAW", "RAW", "RAW",
+					"DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", 
+					"DRAFT", 
+					"ARCHIVED"};
+			return statuses[random.nextInt(statuses.length)];
+		}
+		
+		final String[] statuses = new String[] {"RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW", "RAW","RAW", "RAW", "RAW", "RAW",
+				"DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", "DISCARDED", 
+				"DRAFT", "DRAFT", "DRAFT", 
+				"ARCHIVED", "REPORTED"};
+		return statuses[random.nextInt(statuses.length)];
 	}
 	
 	private String getSort(String user) {
